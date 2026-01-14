@@ -17,7 +17,7 @@ class PongEnv:
         self.ball_dy = None
 
         self.paddle_x = None  # 패들 가로 위치 (0~1)
-        self.paddle_width = 1.0  # 패들 너비 (화면 대비 비율)
+        self.paddle_width = 0.1  # 패들 너비 (화면 대비 비율)
         
         # 점수 추가
         self.score = 0
@@ -334,3 +334,4 @@ if __name__ == "__main__":
             steps = 0
     
     env.close()
+
