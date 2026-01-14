@@ -54,8 +54,8 @@ class PongEnv:
         self.ball_x = 0.5  # 화면 중앙
         self.ball_y = 0.1  # 화면 상단
         self.paddle_x = 0.5  # 패들 중앙
-        self.ball_dx = np.random.choice([-0.05, 0.05])  # 좌우 랜덤
-        self.ball_dy = 0.1  # 아래로 이동
+        self.ball_dx = np.random.choice([-0.01, 0.01])  # 좌우 랜덤
+        self.ball_dy = 0.01  # 아래로 이동
         
         self.score = 0
 
@@ -334,5 +334,6 @@ if __name__ == "__main__":
             steps = 0
     
     env.close()
+
 
 
