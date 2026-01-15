@@ -78,9 +78,11 @@ class PongEnv:
         # action이 0이면 왼쪽으로 0.01 이동
         # action이 2이면 오른쪽으로 0.01 이동
         # hint: self.paddle_x를 증가 또는 감소시키세요
-        
-        
-        
+        if action == 0:
+            self.paddle_x -= 0.01
+        elif action == 2:
+            self.paddle_x += 0.01
+               
         
         # 패들이 화면 밖으로 나가지 않도록 제한
         self.paddle_x = np.clip(self.paddle_x, 0.0, 1.0)
@@ -89,7 +91,8 @@ class PongEnv:
         # 공의 x 위치에 dx 속도를 더하기
         # 공의 y 위치에 dy 속도를 더하기
         # hint: self.ball_x += ?, self.ball_y += ?
-        
+        self.ball_x += self.ball_dx
+        self.ball_y += self.ball_dy
         
         
         reward = 0.0
@@ -99,16 +102,16 @@ class PongEnv:
         # 공의 x 위치가 0.0 이하이거나 1.0 이상이면
         # ball_dx의 부호를 반대로 바꾸기
         # hint: self.ball_dx *= -1
-        
-        
-        
+        if self.ball_x <= 0.0 or self.ball_x >= 1.0:
+            self.ball_dx *= -1
+               
         
         # ✏️ TODO 4: 위쪽 벽 충돌 구현
         # 공의 y 위치가 0.0 이하이면
         # ball_dy의 부호를 반대로 바꾸기
-        
-        
-        
+        if self.ball_y <= 0.0:
+            self.ball_dy *= -1
+               
 
         # ✏️ TODO 5: 패들 충돌 및 점수 시스템 구현
         # 공의 y 위치가 0.95 이상이면:
@@ -120,19 +123,15 @@ class PongEnv:
         #     * reward를 -1.0으로 설정
         #     * done을 True로 설정
         # hint: abs(self.ball_x - self.paddle_x)로 거리 계산
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        if self.ball_y >= 0.95:
+            if abs(self.ball_x - self.paddle_x) <= self.paddle_width/2:
+                self.ball_dy *= -1
+                self.score += 1
+                reward = 1.0
+            else:
+                reward = -1.0
+                done = True        
+                
 
         # info 딕셔너리
         info = {
@@ -156,14 +155,15 @@ class PongEnv:
         hint: np.array([값1, 값2, ...], dtype=np.float32)
         """
         return np.array([
+            self.ball_x, 
+            self.ball_y, 
+            self.paddle_x, 
+            self.ball_dx, 
+            self.ball_dy, 
+        ], dtype=np.float32)
             # 여기에 5개의 값을 채워넣으세요
             
-            
-            
-            
-            
-        ], dtype=np.float32)
-
+        
 
     # 화면 렌더링 관련 함수
     def render(self):
@@ -188,16 +188,14 @@ class PongEnv:
         # 공
         ball_pixel_x = int(self.ball_x * self.width)
         ball_pixel_y = int(self.ball_y * self.height)
-        pygame.draw.rect(self.screen, (255, 255, 255),
+        pygame.draw.rect(self.screen, (255, 0, 0),
                         (ball_pixel_x - 7, ball_pixel_y - 7, 15, 15))
         
         # 점수 표시
         score_text = self.font.render(str(self.score), True, (255, 255, 255))
         self.screen.blit(score_text, (self.width // 2 - 30, 50))
         
-        # Miss 횟수 표시
-        self.screen.blit(miss_text, (self.width - 150, 20))
-        
+                
         pygame.display.flip()
         
         if self.clock:
@@ -336,3 +334,6 @@ if __name__ == "__main__":
             steps = 0
     
     env.close()
+
+
+
